@@ -58,10 +58,10 @@ classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 're
 # Adding the second hidden layer
 classifier.add(Dense(units = 6, kernel_initializer = 'uniform', activation = 'relu'))
 
-# Adding the output layer
+# Adding the output layer | for more than 2 categories at the output, , units = categories & activation should be "softmax"
 classifier.add(Dense(units = 1, kernel_initializer = 'uniform', activation = 'sigmoid'))
 
-# Compiling the ANN
+# Compiling the ANN | if output has more than 2 categories, loss = "categorical_crossentropy"
 classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 # Fitting the ANN to the Training set
