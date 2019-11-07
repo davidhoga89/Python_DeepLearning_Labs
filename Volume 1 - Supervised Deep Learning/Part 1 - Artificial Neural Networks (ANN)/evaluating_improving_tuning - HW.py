@@ -114,8 +114,21 @@ def build_classifier():
     return classifier
 classifier = KerasClassifier(build_fn = build_classifier, batch_size = 25, epochs = 500)
 accuracies = cross_val_score(estimator = classifier, X = X_train, y = y_train, cv = 10, n_jobs = 1)
-mean = accuracies.mean()
-variance = accuracies.std()
+"""
+0.855
+0.83625
+0.88
+0.855
+0.88
+0.85625
+0.83625
+0.8475
+0.83625
+0.8425
+
+"""
+mean = accuracies.mean() #= 0.8525000035762786 improved 2 points (from 83.5%) with rmsprop, batch = 25 & 500 epochs
+variance = accuracies.std() #= 0.015672425432520898
 
 """
 # Improving the ANN
