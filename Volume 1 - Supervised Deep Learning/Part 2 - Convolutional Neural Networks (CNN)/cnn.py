@@ -17,6 +17,7 @@ from keras.layers import Conv2D
 from keras.layers import MaxPooling2D
 from keras.layers import Flatten
 from keras.layers import Dense
+from keras.layers import Dropout
 #import os
 #import numpy as np
 import matplotlib.pyplot as plt
@@ -50,26 +51,30 @@ classifier.add(MaxPooling2D(pool_size = (2, 2)))
 classifier.add(Dropout(0.2)) #Adding Dropout to reduce overfitting (randomly kills 20% of the output units in each training epoch)
 
 # Adding a second convolutional layer
-classifier.add(Conv2D(32, (3, 3), activation = 'relu'))
+classifier.add(Conv2D(64, (3, 3), activation = 'relu')) #original 32 features map
 classifier.add(MaxPooling2D(pool_size = (2, 2)))
-classifier.add(Dropout(0.2)) #Adding Dropout to reduce overfitting (randomly kills 20% of the output units in each training epoch)
 
 # Step 3 - Flattening
 classifier.add(Flatten())
 
 # Step 4 - Full connection
 classifier.add(Dense(units = 128, activation = 'relu'))
+classifier.add(Dropout(0.3)) #Adding Dropout to reduce overfitting (randomly kills 20% of the output units in each training epoch)
 classifier.add(Dense(units = 1, activation = 'sigmoid'))
 
 # Compiling the CNN
-classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
+classifier.compile(optimizer = 'rmsprop', loss = 'binary_crossentropy', metrics = ['accuracy'])
 classifier.summary()
-
+'''#Improved model with lower learning rate
+model.compile(loss='binary_crossentropy',
+            optimizer=RMSprop(lr=0.0001),
+            metrics=['accuracy'])
+'''
 # Part 2 - Fitting the CNN to the images
 
 from keras.preprocessing.image import ImageDataGenerator
 
-epochs=12 #original = 25
+epochs=25 #original = 25
 
 #IMAGE AUGMENTATION (generating more training data using random tranformation),
 #to beat overfitting: small number of training examples
@@ -153,13 +158,34 @@ import numpy as np
 model = load_model('img_model.h5')
 
 model.compile(loss='binary_crossentropy',
-              optimizer='adam',
+              optimizer='rmsprop',
               metrics=['accuracy'])
 
-img = cv2.imread('dataset/prediction_img/test1.jpg')
-img = cv2.resize(img,(64,64))
-img = np.reshape(img,[1,64,64,3])
+def prediccion(img):
+  plt.imshow(img)
+  img2 = cv2.resize(img,(64,64))
+  img2 = np.reshape(img2,[1,64,64,3])
+  classes = model.predict_classes(img2)
+  if classes == 0: 
+    classes = "Cat"
+    else:
+    classes = "Dog"
+  return (classes)
 
-classes = model.predict_classes(img)
+imagen = cv2.imread('dataset/prediction_img/test6.jpg')
+prediccion(imagen)
 
-print classes
+
+#solution from instructor
+from keras.preprocessing import image
+test_image = image.load_img('dataset/prediction_img/test2.jpg', target_size = (64,64))
+test_image2 = image.img_to_array(test_image)
+test_image2 = np.expand_dims(test_image2,axis = 0)
+training_set.class_indices
+result = model.predict(test_image2)
+if result[0][0] == 1:
+  prediction = 'dog'
+else:
+  prediction = 'cat'
+plt.imshow(test_image)
+prediction
